@@ -102,48 +102,82 @@ FADT and the emulated ports line up, and a real shutdown (`SLP_TYP=5` with `SLP_
 still powers off. (`--acpi off` also lets coreboot boot, but leaves ACPI non-functional
 -- the `SLP_EN` fix is what makes it both present and working.)
 
-### Gap 2 -- UEFI payload bring-up on the emulated board -- open
+### Gap 2 -- UEFI payload to an interactive shell -- SOLVED
 
-With gap 1 fixed, coreboot hands off cleanly, but neither payload yet reaches a shell,
-for VBox-vs-QEMU platform-model differences the vanilla `emulation/qemu-i440fx` board
-does not paper over:
+With gap 1 fixed, a real coreboot `UefiPayloadPkg` (the classic, not universal, build
+-- `CONFIG_PAYLOAD_EDK2` + `CONFIG_EDK2_UEFIPAYLOAD`, MrChromebox fork) now boots all
+the way to an **interactive UEFI shell** inside the patched VirtualBox, with ACPI
+functional. See `proof/uefi-shell-in-vbox.log`:
 
-- `DasharoPayloadPkg` resets in early PEI. Root causes found with a DEBUG payload
-  (serial): first `ASSERT CpuTimerLib.c(63): RegEax != 0` -- it reads the core-crystal
-  clock from CPUID leaf `0x15`, which VBox's CPU does not implement (fix:
-  `-D CPU_TIMER_LIB_ENABLE=FALSE`, the same coreboot uses); then
-  `ASSERT AcpiTimerLib.c(57): GuidHob != NULL` -- the ACPI-board-info HOB
-  (`gUefiAcpiBoardInfoGuid`, carrying the PM-timer base from the FADT) is never built,
-  i.e. the payload's `ParseAcpiInfo` cannot find coreboot's ACPI RSDP (a
-  coreboot->payload ACPI hand-off that works in QEMU but not here).
-- Upstream `UefiPayloadPkg` (built natively by coreboot) fails earlier: a payload
-  segment loads at `0x000da520`, inside the 640 KiB--1 MiB legacy hole that coreboot's
-  VBox (CMOS-derived) memory map marks reserved, so `lzma: Decoding error` /
-  `Payload not loaded`.
+```
+UEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (EDK II, 0x00010000)
+Welcome to the UEFI Shell!
+Shell>
+```
 
-Both are the same root issue: coreboot's QEMU board assumes QEMU's memory map and
-ACPI-RSDP hand-off. The clean fix is the dedicated board below, matched to VBox's
-memory map and ACPI.
+Getting there meant closing a chain of VBox-vs-QEMU/real-hardware differences the
+vanilla `emulation/qemu-i440fx` board does not paper over. Each has a one-line fix:
 
-## Next step: a real Dasharo target
+1. **48-bit paging hang.** The payload identity-maps the full physical space; VBox
+   passes the host's 48-bit width and masks the 1 GiB-page CPUID bit, so the map needs
+   ~1 GiB of 2 MiB-page tables and wedges. Fix: report 36 physical address bits to the
+   guest -- `VBoxManage modifyvm <vm> --cpuid-set 0x80000008 0x00003024 ...`.
+2. **No HPET.** `HpetTimerDxe` asserts (`mHpetGeneralCapabilities == 0xFFFF...`). Fix:
+   `VBoxManage modifyvm <vm> --hpet on`.
+3. **HPET interrupt never fires.** Even present, VBox's HPET does not deliver the timer
+   interrupt, so DXE's tick stalls. Fix: build the payload with the LAPIC timer instead
+   -- `CONFIG_EDK2_USE_LAPIC_TIMER=y` (the LAPIC is on the CPU, handled by AMD-V).
+4. **#GP in `PciHostBridgeDxe`.** coreboot emits an entryless MCFG (i440fx has no ECAM,
+   and there is no `fw_cfg` to read QEMU's), and the payload reads past it into the
+   adjacent "APIC" table as a bogus ECAM base. Fix: in coreboot `src/acpi/acpi.c`
+   `acpi_create_mcfg`, skip emitting the MCFG when there are no entries (the memset-zeroed
+   header then has `length < min_size` and the table loop drops it); the payload falls
+   back to legacy PCI config. The one added guard, right after `current` is set:
+   ```c
+   if (!CONFIG(ECAM_MMCONF_SUPPORT) && !CONFIG(ACPI_CUSTOM_MCFG))
+           return;
+   ```
+5. **Serial console + no DEBUG asserts.** Build RELEASE with `CONFIG_EDK2_SERIAL_SUPPORT=y`
+   so the shell appears on COM1 (a DEBUG build also trips a TPM physical-presence
+   `ASSERT` that is compiled out in RELEASE).
 
-The two gaps above define it. The clean, idiomatic Dasharo target is a dedicated
-mainboard rather than reusing the QEMU board:
+### Functional ACPI, proven end to end
 
-- New coreboot mainboard `src/mainboard/emulation/qemu-vbox` (cloned from
-  `qemu-i440fx`/`q35`, adapted to VirtualBox's CMOS RAM sizing and info port, no
-  `fw_cfg`, and not driving the absent PIIX4 ACPI at `00:01.3`) -- this is what closes
-  gap 1 (the ramstage ACPI S5). Alternatively, teach VirtualBox's `DevACPI` to expose
-  a QEMU-compatible PIIX4 ACPI function + `fw_cfg`.
-- The reused `DasharoPayloadPkg` as the coreboot payload. Gap 2 (the immediate PEI
-  reset) needs a DEBUG payload build (`USE_CBMEM_FOR_CONSOLE=TRUE` or serial) to find
-  the fault, then either adapt `DasharoPayloadPkg` to the board or fall back to
-  upstream `UefiPayloadPkg` for the emulated target.
-- A Dasharo `configs/config.emulation_vbox` wiring the two together.
+With ACPI enabled, typing `reset -s` at the shell (an ACPI S5 shutdown: `SLP_TYP=5`
+written **with** `SLP_EN`) powers the VM off cleanly -- `VBox.log` logs
+`ACPI: Entering S5 power state`, and the VM transitions to OFF on its own -- while
+coreboot's harmless boot-time `SLP_TYP=5 / SLP_EN=0` write is ignored. That is both
+halves of the `SLP_EN` fix working.
 
-That yields a true Dasharo firmware image for VirtualBox, loadable with the same
-`virtualbox` patch. coreboot carries a Bhyve precedent for adding an emulator board
-without `#ifdef`-ing the shared code.
+## Reproduce (full recipe)
+
+coreboot `.config` (on top of `configs/config.vbox-i440fx`): `CONFIG_PAYLOAD_EDK2=y`,
+`CONFIG_EDK2_UEFIPAYLOAD=y`, `CONFIG_EDK2_USE_LAPIC_TIMER=y`, `CONFIG_EDK2_SERIAL_SUPPORT=y`,
+`CONFIG_EDK2_RELEASE=y`; apply `patches/coreboot-skip-empty-mcfg.patch`; `make`.
+
+Run in the patched VirtualBox (both `DevEFI` CorebootRom and `DevACPI` SLP_EN fixes):
+
+```
+VBoxManage modifyvm <vm> --firmware efi --chipset piix3 --hpet on --memory 2048
+VBoxManage modifyvm <vm> --cpuid-set 0x80000008 0x00003024 0x791ef257 0x0000400f 0x00010000
+VBoxManage modifyvm <vm> --uart1 0x3f8 4 --uartmode1 file <serial.log>
+VBoxManage setextradata <vm> "VBoxInternal/Devices/efi/0/Config/EfiRom"      "<coreboot.rom>"
+VBoxManage setextradata <vm> "VBoxInternal/Devices/efi/0/Config/CorebootRom" 1
+```
+
+## Next step: the real Dasharo payload + a first-class board
+
+This proves the coreboot + UEFI-payload architecture and functional ACPI in VirtualBox
+with upstream `UefiPayloadPkg`. The remaining polish is the **Dasharo** payload
+specifically (`DasharoPayloadPkg` needs `-D CPU_TIMER_LIB_ENABLE=FALSE` plus the same
+LAPIC/36-bit/MCFG treatment; its PEI ACPI-board-info HOB ordering still needs work),
+and folding the five VM/build tweaks into a dedicated coreboot
+`src/mainboard/emulation/qemu-vbox` board (VBox memory map, no `fw_cfg`, LAPIC timer,
+no empty MCFG) plus a `configs/config.emulation_vbox`, so a stock VM boots it with no
+per-VM `--cpuid-set`/`--hpet`. coreboot carries a Bhyve precedent for adding an
+emulator board without `#ifdef`-ing shared code.
 
 ## License
 
