@@ -78,39 +78,52 @@ PCI: 00:00:04.0 [80ee/cafe] enabled     # VirtualBox guest-service device
 The corresponding VirtualBox log line was
 `EFI: coreboot image, 0x400000 bytes mapped at 0xffc00000..4GB`.
 
-## Real DasharoPayloadPkg: built, integrated, two remaining gaps
+## Real DasharoPayloadPkg + functional ACPI (2026-10-21)
 
-A real `DasharoPayloadPkg` UEFI payload was built from `Dasharo/edk2` and integrated
-(OVH, Debian trixie, 2026-10-21):
+A real `DasharoPayloadPkg` UEFI payload was built from `Dasharo/edk2`
+(`-D BOOTLOADER=COREBOOT -D TPM_ENABLE=FALSE -D SECURE_BOOT_ENABLE=FALSE`
+-> `UEFIPAYLOAD.fd`) and integrated into the 4 MiB ROM with
+`cbfstool add-payload -f UEFIPAYLOAD.fd -n fallback/payload -c lzma` (the whole FV
+LZMA-packs to ~910 KiB; load `0x800000`, entry `0x800860`).
 
-- Payload: `DasharoPayloadPkg/DasharoPayloadPkg.dsc -a IA32 -a X64 -t GCC5 -b RELEASE
-  -D BOOTLOADER=COREBOOT -D TPM_ENABLE=FALSE -D SECURE_BOOT_ENABLE=FALSE`
-  -> `UEFIPAYLOAD.fd` (14.8 MiB FV, mostly padding).
-- Integrated into the 4 MiB coreboot ROM with
-  `cbfstool coreboot.rom add-payload -f UEFIPAYLOAD.fd -n fallback/payload -c lzma`
-  (the whole FV LZMA-compresses to ~910 KiB; load `0x800000`, entry `0x800860`).
+### Gap 1 -- ramstage ACPI S5 -- SOLVED, with functional ACPI
 
-Two gaps block a UEFI shell inside VirtualBox; both are tracked and reproducible:
+Early on, with the guest's ACPI device enabled, coreboot powered the VM off during
+ramstage. Traced on the wire (a temporary `LogRel` in VirtualBox's PM1a-control
+handler): coreboot's PIIX4 southbridge writes `SUS_TYP_S0 | SCI_EN` = `0x1401` to
+PM1a_CTL -- `SLP_TYP = 5`, `SLP_EN` (bit 13) **clear** -- a harmless "arm S0 + enable
+SCI" write on real PIIX4. VirtualBox's `acpiR3PM1aCtlWrite` keyed the sleep state off
+`SLP_TYP` **alone** and read 5 as S5, powering off. The fix (companion `virtualbox`
+repo) gates the transition on `SLP_EN` per ACPI 1.0 4.7.2.2.1. With it, coreboot runs
+to completion with ACPI **enabled**, writes its own ACPI tables, and reaches
+`Jumping to boot code at 0x800860`. ACPI is **functional**, not merely disabled:
+VirtualBox relocates its PM I/O decode from coreboot's `PMBA` config write, so the
+FADT and the emulated ports line up, and a real shutdown (`SLP_TYP=5` with `SLP_EN`)
+still powers off. (`--acpi off` also lets coreboot boot, but leaves ACPI non-functional
+-- the `SLP_EN` fix is what makes it both present and working.)
 
-1. VirtualBox side (`proof/dasharo-payloadpkg-vbox-serial.log`). The patched VBox
-   loads and runs this ROM exactly like the `PAYLOAD_NONE` one -- coreboot reaches
-   ramstage and enumerates the VBox chipset -- but coreboot's `emulation/qemu-i440fx`
-   expects QEMU's PIIX4 ACPI function at `00:01.3` (`[8086/7113]`) and `fw_cfg`,
-   neither of which VirtualBox emulates. Ramstage logs `PCI: Static device PCI:
-   00:00:01.3 not found` and then trips an early ACPI S5 (`ACPI: Entering S5 power
-   state` in VBox.log) -- before the payload is ever loaded.
+### Gap 2 -- UEFI payload bring-up on the emulated board -- open
 
-2. Payload side (`proof/dasharo-payloadpkg-qemu-handoff.log`). Under QEMU (which has
-   `fw_cfg` + PIIX4 ACPI) the identical ROM boots coreboot to completion and the
-   coreboot -> payload hand-off is proven (`CBFS: Found 'fallback/payload'` ->
-   `Loading Segment: addr 0x00800000` -> `Entry Point 0x00800860` -> `Jumping to boot
-   code`). But `DasharoPayloadPkg` then resets immediately in early PEI (QEMU shows
-   "Guest has not initialized the display"): it is built for real Dasharo boards, not
-   the vanilla `emulation/qemu-i440fx` platform.
+With gap 1 fixed, coreboot hands off cleanly, but neither payload yet reaches a shell,
+for VBox-vs-QEMU platform-model differences the vanilla `emulation/qemu-i440fx` board
+does not paper over:
 
-So the VBox-side loader patch is fully proven (it runs real coreboot firmware), and a
-real Dasharo payload builds + integrates + hands off, but a UEFI shell inside VBox
-needs the chipset + payload-platform work in the next section.
+- `DasharoPayloadPkg` resets in early PEI. Root causes found with a DEBUG payload
+  (serial): first `ASSERT CpuTimerLib.c(63): RegEax != 0` -- it reads the core-crystal
+  clock from CPUID leaf `0x15`, which VBox's CPU does not implement (fix:
+  `-D CPU_TIMER_LIB_ENABLE=FALSE`, the same coreboot uses); then
+  `ASSERT AcpiTimerLib.c(57): GuidHob != NULL` -- the ACPI-board-info HOB
+  (`gUefiAcpiBoardInfoGuid`, carrying the PM-timer base from the FADT) is never built,
+  i.e. the payload's `ParseAcpiInfo` cannot find coreboot's ACPI RSDP (a
+  coreboot->payload ACPI hand-off that works in QEMU but not here).
+- Upstream `UefiPayloadPkg` (built natively by coreboot) fails earlier: a payload
+  segment loads at `0x000da520`, inside the 640 KiB--1 MiB legacy hole that coreboot's
+  VBox (CMOS-derived) memory map marks reserved, so `lzma: Decoding error` /
+  `Payload not loaded`.
+
+Both are the same root issue: coreboot's QEMU board assumes QEMU's memory map and
+ACPI-RSDP hand-off. The clean fix is the dedicated board below, matched to VBox's
+memory map and ACPI.
 
 ## Next step: a real Dasharo target
 
