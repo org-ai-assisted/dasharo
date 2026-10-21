@@ -1,0 +1,55 @@
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 bootblock starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: Found "FLASH" version 1.1 at 0x0.
+[DEBUG]  FMAP: base = 0x0 size = 0x400000 #areas = 3
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: mcache @0x00014e00 built for 11 files, used 0x260 of 0x4000 bytes
+[INFO ]  CBFS: Found 'fallback/romstage' @0x80 size 0x4b38 in mcache @0x00014e2c
+[DEBUG]  BS: bootblock times (exec / console): total (unknown) / 1 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 romstage starting (log level: 7)...
+[INFO ]  QEMU: firmware config interface not found
+[WARN ]  QEMU: Falling back to RAM info in CMOS
+[DEBUG]  CBMEM:
+[DEBUG]  IMD: root @ 0x0ffff000 254 entries.
+[DEBUG]  IMD: root @ 0x0fffec00 62 entries.
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[DEBUG]  Starting cbfs_boot_device
+[INFO ]  CBFS: Found 'fallback/postcar' @0x16940 size 0x5024 in mcache @0x00014fac
+[DEBUG]  Loading module at 0x0ffd1000 with entry 0x0ffd1031. filesize: 0x4d08 memsize: 0xb030
+[DEBUG]  Processing 183 relocs. Offset value of 0x0dfd1000
+[DEBUG]  BS: romstage times (exec / console): total (unknown) / 4 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 postcar starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: Found 'fallback/ramstage' @0x4c40 size 0xfd0a in mcache @0x0fffea2c
+[DEBUG]  Loading module at 0x0fea5000 with entry 0x0fea5000. filesize: 0x1daf0 memsize: 0x12a328
+[DEBUG]  Processing 1955 relocs. Offset value of 0x0bea5000
+[DEBUG]  BS: postcar times (exec / console): total (unknown) / 3 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 ramstage starting (log level: 7)...
+[INFO ]  Enumerating buses...
+[DEBUG]  Root Device scanning...
+[DEBUG]  CPU_CLUSTER: 0 enabled
+[DEBUG]  DOMAIN: 00000000 enabled
+[DEBUG]  DOMAIN: 00000000 scanning...
+[DEBUG]  PCI: pci_scan_bus for segment group 00 bus 00
+[DEBUG]  PCI: 00:00:00.0 [8086/1237] enabled
+[DEBUG]  PCI: 00:00:01.0 [8086/7000] enabled
+[INFO ]  PCI: Static device PCI: 00:00:01.1 not found, disabling it.
+[INFO ]  PCI: Static device PCI: 00:00:01.3 not found, disabling it.
+[DEBUG]  PCI: 00:00:02.0 [15ad/0405] enabled
+[DEBUG]  PCI: 00:00:03.0 [1022/2000] enabled
+[DEBUG]  PCI: 00:00:04.0 [80ee/cafe] enabled
+[DEBUG]  PCI: 00:00:05.0 [8086/2415] enabled

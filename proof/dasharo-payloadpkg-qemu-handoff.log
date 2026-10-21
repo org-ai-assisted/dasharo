@@ -1,0 +1,261 @@
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 bootblock starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: Found "FLASH" version 1.1 at 0x0.
+[DEBUG]  FMAP: base = 0x0 size = 0x400000 #areas = 3
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: mcache @0x00014e00 built for 11 files, used 0x260 of 0x4000 bytes
+[INFO ]  CBFS: Found 'fallback/romstage' @0x80 size 0x4b38 in mcache @0x00014e2c
+[DEBUG]  BS: bootblock times (exec / console): total (unknown) / 2 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 romstage starting (log level: 7)...
+[INFO ]  QEMU: firmware config interface detected
+[INFO ]  Firmware config version id: 3
+[INFO ]  QEMU: firmware config: Found 'etc/e820'
+[DEBUG]  CBMEM:
+[DEBUG]  IMD: root @ 0x1ffff000 254 entries.
+[DEBUG]  IMD: root @ 0x1fffec00 62 entries.
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[DEBUG]  Starting cbfs_boot_device
+[INFO ]  CBFS: Found 'fallback/postcar' @0x16940 size 0x5024 in mcache @0x00014fac
+[DEBUG]  Loading module at 0x1ffd1000 with entry 0x1ffd1031. filesize: 0x4d08 memsize: 0xb030
+[DEBUG]  Processing 183 relocs. Offset value of 0x1dfd1000
+[DEBUG]  BS: romstage times (exec / console): total (unknown) / 3 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 postcar starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: Found 'fallback/ramstage' @0x4c40 size 0xfd0a in mcache @0x1fffea2c
+[DEBUG]  Loading module at 0x1fea5000 with entry 0x1fea5000. filesize: 0x1daf0 memsize: 0x12a328
+[DEBUG]  Processing 1955 relocs. Offset value of 0x1bea5000
+[DEBUG]  BS: postcar times (exec / console): total (unknown) / 2 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 ramstage starting (log level: 7)...
+[INFO ]  Enumerating buses...
+[DEBUG]  Root Device scanning...
+[DEBUG]  CPU_CLUSTER: 0 enabled
+[DEBUG]  DOMAIN: 00000000 enabled
+[DEBUG]  DOMAIN: 00000000 scanning...
+[DEBUG]  PCI: pci_scan_bus for segment group 00 bus 00
+[DEBUG]  PCI: 00:00:00.0 [8086/1237] enabled
+[DEBUG]  PCI: 00:00:01.0 [8086/7000] enabled
+[DEBUG]  PCI: 00:00:01.1 [8086/7010] enabled
+[DEBUG]  PCI: 00:00:01.3 [8086/7113] enabled
+[DEBUG]  PCI: 00:00:02.0 [1234/1111] enabled
+[DEBUG]  PCI: 00:00:03.0 [8086/100e] enabled
+[DEBUG]  PCI: 00:00:01.0 scanning...
+[DEBUG]  scan_bus: bus PCI: 00:00:01.0 finished in 0 msecs
+[DEBUG]  PCI: 00:00:01.3 scanning...
+[DEBUG]  scan_bus: bus PCI: 00:00:01.3 finished in 0 msecs
+[DEBUG]  scan_bus: bus DOMAIN: 00000000 finished in 2 msecs
+[DEBUG]  scan_bus: bus Root Device finished in 2 msecs
+[INFO ]  done
+[DEBUG]  BS: BS_DEV_ENUMERATE run times (exec / console): 2 / 2 ms
+[DEBUG]  found VGA at PCI: 00:00:02.0
+[DEBUG]  Setting up VGA for PCI: 00:00:02.0
+[DEBUG]  Setting PCI_BRIDGE_CTL_VGA for bridge DOMAIN: 00000000
+[DEBUG]  Setting PCI_BRIDGE_CTL_VGA for bridge Root Device
+[INFO ]  Allocating resources...
+[INFO ]  Reading resources...
+[INFO ]  QEMU: firmware config interface detected
+[INFO ]  Firmware config version id: 3
+[INFO ]  QEMU: firmware config: Found 'etc/e820'
+[DEBUG]  QEMU: e820/res: 0xfd00000000 +0x300000000
+[DEBUG]  QEMU: e820/ram: 0x00000000 + 0x20000000
+[DEBUG]  QEMU: reserve ioports 0x0510-0x0511 [firmware-config]
+[DEBUG]  QEMU: reserve ioports 0x5658-0x5658 [vmware-port]
+[DEBUG]  QEMU: reserve ioports 0xae00-0xae0f [pci-hotplug]
+[DEBUG]  QEMU: reserve ioports 0xaf00-0xaf1f [cpu-hotplug]
+[DEBUG]  QEMU: reserve ioports 0xafe0-0xafe3 [piix4-gpe0]
+[INFO ]  Done reading resources.
+[INFO ]  === Resource allocator: DOMAIN: 00000000 - Pass 1 (relative placement) ===
+[INFO ]  === Resource allocator: DOMAIN: 00000000 - Pass 2 (allocating resources) ===
+[DEBUG]  DOMAIN: 00000000 io: base: 0 size: 0 align: 0 gran: 0 limit: ffff
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0d base 00000510 limit 00000511 io (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0e base 00005658 limit 00005658 io (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0f base 0000ae00 limit 0000ae0f io (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 10 base 0000af00 limit 0000af1f io (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 11 base 0000afe0 limit 0000afe3 io (fixed)
+[DEBUG]   avoid_fixed_resources: PCI: 00:00:01.0 01 base 00000000 limit 00000fff io (fixed)
+[DEBUG]   avoid_fixed_resources: PCI: 00:00:01.3 01 base 0000e400 limit 0000e43f io (fixed)
+[DEBUG]   avoid_fixed_resources: PCI: 00:00:01.3 02 base 00000f00 limit 00000f0f io (fixed)
+[INFO ]   DOMAIN: 00000000: Resource ranges:
+[INFO ]   * Base: 1000, Size: 4658, Tag: 100
+[INFO ]   * Base: 5659, Size: 57a7, Tag: 100
+[INFO ]   * Base: ae10, Size: f0, Tag: 100
+[INFO ]   * Base: af20, Size: c0, Tag: 100
+[INFO ]   * Base: afe4, Size: 341c, Tag: 100
+[INFO ]   * Base: e440, Size: 1bc0, Tag: 100
+[DEBUG]    PCI: 00:00:03.0 14 *  [0xffc0 - 0xffff] limit: ffff io
+[DEBUG]    PCI: 00:00:01.1 20 *  [0xffb0 - 0xffbf] limit: ffbf io
+[DEBUG]  DOMAIN: 00000000 io: base: 0 size: 0 align: 0 gran: 0 limit: ffff done
+[DEBUG]  DOMAIN: 00000000 mem: base: 20000000 size: 0 align: 0 gran: 0 limit: fdffffff
+[DEBUG]  DOMAIN: 00000000 mem: base: 100000000 size: 0 align: 0 gran: 0 limit: ffffffffff
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0a base fd00000000 limit ffffffffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0b base 00000000 limit 0009ffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 0c base 000c0000 limit 1fffffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 12 base 000a0000 limit 000bffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 13 base 000c0000 limit 000fffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 02 base fec00000 limit fecfffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: DOMAIN: 00000000 03 base fee00000 limit fee0ffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: PCI: 00:00:01.0 02 base ff800000 limit ffffffff mem (fixed)
+[DEBUG]   avoid_fixed_resources: PCI: 00:00:01.0 03 base fec00000 limit fec00fff mem (fixed)
+[INFO ]   DOMAIN: 00000000: Resource ranges:
+[INFO ]   * Base: 20000000, Size: de000000, Tag: 200
+[INFO ]   * Base: 100000000, Size: fc00000000, Tag: 200
+[DEBUG]    PCI: 00:00:02.0 10 *  [0xfd000000 - 0xfdffffff] limit: fdffffff prefmem
+[DEBUG]    PCI: 00:00:03.0 30 *  [0xfcfc0000 - 0xfcffffff] limit: fcffffff mem
+[DEBUG]    PCI: 00:00:03.0 10 *  [0xfcfa0000 - 0xfcfbffff] limit: fcfbffff mem
+[DEBUG]    PCI: 00:00:02.0 30 *  [0xfcf90000 - 0xfcf9ffff] limit: fcf9ffff mem
+[DEBUG]    PCI: 00:00:02.0 18 *  [0xfcf8f000 - 0xfcf8ffff] limit: fcf8ffff mem
+[DEBUG]  DOMAIN: 00000000 mem: base: 20000000 size: 0 align: 0 gran: 0 limit: fdffffff done
+[DEBUG]  DOMAIN: 00000000 mem: base: 100000000 size: 0 align: 0 gran: 0 limit: ffffffffff done
+[INFO ]  === Resource allocator: DOMAIN: 00000000 - resource allocation complete ===
+[DEBUG]  PCI: 00:00:01.1 20 <- [0x000000000000ffb0 - 0x000000000000ffbf] size 0x00000010 gran 0x04 io
+[DEBUG]  PCI: 00:00:02.0 10 <- [0x00000000fd000000 - 0x00000000fdffffff] size 0x01000000 gran 0x18 prefmem
+[DEBUG]  PCI: 00:00:02.0 18 <- [0x00000000fcf8f000 - 0x00000000fcf8ffff] size 0x00001000 gran 0x0c mem
+[DEBUG]  PCI: 00:00:02.0 30 <- [0x00000000fcf90000 - 0x00000000fcf9ffff] size 0x00010000 gran 0x10 romem
+[DEBUG]  PCI: 00:00:03.0 10 <- [0x00000000fcfa0000 - 0x00000000fcfbffff] size 0x00020000 gran 0x11 mem
+[DEBUG]  PCI: 00:00:03.0 14 <- [0x000000000000ffc0 - 0x000000000000ffff] size 0x00000040 gran 0x06 io
+[DEBUG]  PCI: 00:00:03.0 30 <- [0x00000000fcfc0000 - 0x00000000fcffffff] size 0x00040000 gran 0x12 romem
+[INFO ]  Done setting resources.
+[INFO ]  Done allocating resources.
+[DEBUG]  BS: BS_DEV_RESOURCES run times (exec / console): 4 / 12 ms
+[INFO ]  Enabling resources...
+[DEBUG]  PCI: 00:00:00.0 cmd <- 00
+[DEBUG]  PCI: 00:00:01.0 cmd <- 00
+[DEBUG]  PCI: 00:00:01.1 cmd <- 01
+[DEBUG]  PCI: 00:00:01.3 cmd <- 00
+[DEBUG]  PCI: 00:00:02.0 cmd <- 03
+[DEBUG]  PCI: 00:00:03.0 cmd <- 03
+[INFO ]  done.
+[DEBUG]  BS: BS_DEV_ENABLE run times (exec / console): 0 / 1 ms
+[INFO ]  Initializing devices...
+[DEBUG]  CPU_CLUSTER: 0 init
+[INFO ]  CPU: QEMU Virtual CPU version 2.5+.
+[INFO ]  LAPIC 0x0 in XAPIC mode.
+[DEBUG]  CPU: APIC: 00 enabled
+[DEBUG]  Loading module at 0x00030000 with entry 0x00030000. filesize: 0x178 memsize: 0x178
+[DEBUG]  Processing 16 relocs. Offset value of 0x00030000
+[INFO ]  Initializing CPU #0
+[DEBUG]  CPU: vendor AMD device 60fb1
+[DEBUG]  CPU: family 0f, model 6b, stepping 01
+[INFO ]  CPU #0 initialized
+[INFO ]  bsp_do_flight_plan done after 0 msecs.
+[DEBUG]  CPU_CLUSTER: 0 init finished in 2 msecs
+[DEBUG]  PCI: 00:00:00.0 init
+[DEBUG]  Assigning IRQ 10 to PCI: 00:00:01.3
+[DEBUG]  Assigning IRQ 11 to PCI: 00:00:03.0
+[DEBUG]  PCI: 00:00:00.0 init finished in 1 msecs
+[DEBUG]  PCI: 00:00:01.0 init
+[DEBUG]  RTC Init
+[DEBUG]  IOAPIC: Initializing IOAPIC at fec00000
+[DEBUG]  IOAPIC: ID = 0x02
+[DEBUG]  IOAPIC: 24 interrupts
+[DEBUG]  IOAPIC: Clearing IOAPIC at fec00000
+[DEBUG]  IOAPIC: ExtINT deferred (pending=0, gsi0=fec00000)
+[DEBUG]  IOAPIC: Enabling virtual-wire ExtINT on fec00000, BSP LAPIC = 0x00
+[DEBUG]  PCI: 00:00:01.0 init finished in 1 msecs
+[DEBUG]  PCI: 00:00:01.1 init
+[DEBUG]  IDE: Primary interface: on
+[DEBUG]  IDE: Secondary interface: on
+[DEBUG]  IDE: Access to legacy IDE ports: off
+[DEBUG]  PCI: 00:00:01.1 init finished in 0 msecs
+[DEBUG]  PCI: 00:00:02.0 init
+[DEBUG]  PCI: 00:00:02.0 init finished in 2 msecs
+[DEBUG]  PCI: 00:00:03.0 init
+[DEBUG]  PCI: 00:00:03.0 init finished in 0 msecs
+[INFO ]  Devices initialized
+[DEBUG]  BS: BS_DEV_INIT run times (exec / console): 6 / 4 ms
+[INFO ]  Finalize devices...
+[INFO ]  Devices finalized
+[INFO ]  Copying Interrupt Routing Table to 0x000f0000... done.
+[INFO ]  Copying Interrupt Routing Table to 0x1fe9b000... done.
+[DEBUG]  PIRQ table: 128 bytes.
+[INFO ]  QEMU: firmware config: Found 'etc/table-loader'
+[DEBUG]  QEMU: found ACPI tables in fw_cfg.
+[INFO ]  QEMU: firmware config: Found 'etc/acpi/rsdp'
+[DEBUG]  QEMU: loading "etc/acpi/rsdp" to 0x1fe77000 (len 20)
+[INFO ]  QEMU: firmware config: Found 'etc/acpi/tables'
+[DEBUG]  QEMU: loading "etc/acpi/tables" to 0x1fe77040 (len 131072)
+[DEBUG]  QEMU: loaded ACPI tables from fw_cfg.
+[DEBUG]  Looking on 0x1fe77000 for valid checksum
+[DEBUG]  Checksum 1 passed
+[DEBUG]  Checksum 2 passed all OK
+[DEBUG]  ACPI: added table 1/32, length now 44
+[DEBUG]  ACPI: added table 2/32, length now 52
+[DEBUG]  ACPI: added table 3/32, length now 60
+[DEBUG]  ACPI: added table 4/32, length now 68
+[DEBUG]  ACPI:     * SSDT
+[DEBUG]  Found 1 CPU(s).
+[DEBUG]  ACPI: added table 5/32, length now 76
+[DEBUG]  ACPI tables: 131508 bytes.
+[DEBUG]  smbios_write_tables: 1fe6f000
+[DEBUG]  SMBIOS firmware version is set to coreboot_version: '0efe0567e794'
+[DEBUG]  SMBIOS: Unknown CPU or CPU doesn't support Deterministic Cache CPUID leaf
+[INFO ]  DOMAIN: 00000000 (QEMU Northbridge i440fx)
+[INFO ]  QEMU: firmware config: Found 'etc/smbios/smbios-tables'
+[DEBUG]  QEMU: found smbios tables in fw_cfg (len 324).
+[DEBUG]  QEMU: coreboot type0 table found at 0x1fe6f040.
+[DEBUG]  QEMU: loading smbios tables to 0x1fe6f07c
+[DEBUG]  SMBIOS tables: 448 bytes.
+[DEBUG]  Writing table forward entry at 0x00000500
+[DEBUG]  Wrote coreboot table at: 0x00000500, 0x10 bytes, checksum 1ff5
+[DEBUG]  Writing coreboot table at 0x1fe9c000
+[DEBUG]   0. 0000000000000000-0000000000000fff: CONFIGURATION TABLES
+[DEBUG]   1. 0000000000001000-000000000009ffff: RAM
+[DEBUG]   2. 00000000000a0000-00000000000f5fff: RESERVED
+[DEBUG]   3. 00000000000f6000-00000000000f6fff: CONFIGURATION TABLES
+[DEBUG]   4. 00000000000f7000-00000000000fffff: RESERVED
+[DEBUG]   5. 0000000000100000-000000001fe6efff: RAM
+[DEBUG]   6. 000000001fe6f000-000000001fea4fff: CONFIGURATION TABLES
+[DEBUG]   7. 000000001fea5000-000000001ffcffff: RAMSTAGE
+[DEBUG]   8. 000000001ffd0000-000000001fffffff: CONFIGURATION TABLES
+[DEBUG]   9. 00000000fec00000-00000000fec00fff: RESERVED
+[DEBUG]  10. 00000000ff800000-00000000ffffffff: RESERVED
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[DEBUG]  QEMU flash behaves as ROM
+[INFO ]  Booting from COREBOOT region
+[INFO ]  Boot mode is 0
+[INFO ]  Boot reason is 0
+[DEBUG]  Wrote coreboot table at: 0x1fe9c000, 0x330 bytes, checksum ef73
+[DEBUG]  coreboot table: 840 bytes.
+[DEBUG]  IMD ROOT    0. 0x1ffff000 0x00001000
+[DEBUG]  IMD SMALL   1. 0x1fffe000 0x00001000
+[DEBUG]  CONSOLE     2. 0x1ffde000 0x00020000
+[DEBUG]  TIME STAMP  3. 0x1ffdd000 0x00000910
+[DEBUG]  AFTER CAR   4. 0x1ffd0000 0x0000d000
+[DEBUG]  RAMSTAGE    5. 0x1fea4000 0x0012c000
+[DEBUG]  COREBOOT    6. 0x1fe9c000 0x00008000
+[DEBUG]  IRQ TABLE   7. 0x1fe9b000 0x00001000
+[DEBUG]  ACPI        8. 0x1fe77000 0x00024000
+[DEBUG]  SMBIOS      9. 0x1fe6f000 0x00008000
+[DEBUG]  IMD small region:
+[DEBUG]    IMD ROOT    0. 0x1fffec00 0x00000400
+[DEBUG]    RO MCACHE   1. 0x1fffe9a0 0x00000260
+[DEBUG]    FMAP        2. 0x1fffe8e0 0x000000b6
+[DEBUG]    ROMSTG STCK 3. 0x1fffe840 0x00000088
+[DEBUG]  BS: BS_WRITE_TABLES run times (exec / console): 6 / 8 ms
+[DEBUG]  Starting cbfs_boot_device
+[INFO ]  CBFS: Found 'fallback/payload' @0x1b9c0 size 0xde495 in mcache @0x1fffeb90
+[DEBUG]  Checking segment from ROM address 0xffc1c9ec
+[DEBUG]  Checking segment from ROM address 0xffc1ca08
+[DEBUG]  Loading segment from ROM address 0xffc1c9ec
+[DEBUG]    code (compression=1)
+[DEBUG]    New segment dstaddr 0x00800000 memsize 0xe30000 srcaddr 0xffc1ca24 filesize 0xde45d
+[DEBUG]  Loading Segment: addr: 0x00800000 memsz: 0x0000000000e30000 filesz: 0x00000000000de45d
+[DEBUG]  using LZMA
+[DEBUG]  Loading segment from ROM address 0xffc1ca08
+[DEBUG]    Entry Point 0x00800860
+[DEBUG]  BS: BS_PAYLOAD_LOAD run times (exec / console): 245 / 2 ms
+[DEBUG]  Jumping to boot code at 0x00800860(0x1fe9c000)
