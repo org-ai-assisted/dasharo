@@ -1,0 +1,30 @@
+coreboot -> UefiPayloadPkg -> UEFI Shell, booted inside the patched VirtualBox
+(OVH, Debian trixie, 2026-10-21). COM1 serial capture, tail.
+
+coreboot hands off to the payload:
+
+  CBFS: Found 'fallback/payload' @0x1bb00 size 0x15f5e7 in mcache @0x7fffeb90
+  Loading Segment: addr: 0x00800000 memsz: 0x0000000000a00000 filesz: 0x000000000015f5af
+  using LZMA
+    Entry Point 0x00802262
+  BS: BS_PAYLOAD_LOAD run times (exec / console): 78 / 3 ms
+  Jumping to boot code at 0x00802262(0x7fe9c000)
+
+UefiPayloadPkg runs DXE + BDS and drops to the interactive shell:
+
+    F2 or Down      to enter Setup Option Menu.
+    ENTER           to boot directly.
+  UEFI Interactive Shell v2.2
+  EDK II
+  UEFI v2.70 (EDK II, 0x00010000)
+  Welcome to the UEFI Shell!
+  If you wound up here by mistake, just type 'exit' to return to the UEFI Options Menu.
+  Shell>
+
+Functional ACPI, confirmed end to end: issuing `reset -s` at the Shell prompt
+(an ACPI S5 shutdown: SLP_TYP=5 written WITH SLP_EN) powers the VM off cleanly --
+  Shell> reset -s
+  VBox.log: ACPI: Entering S5 power state (power down)
+  (VM transitions to OFF on its own)
+while coreboot's harmless boot-time SLP_TYP=5 write with SLP_EN clear is correctly
+ignored by the DevACPI SLP_EN fix.
