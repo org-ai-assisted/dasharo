@@ -1,0 +1,72 @@
+================================================================================
+ coreboot booting inside Oracle VirtualBox 7.2.20
+ via a patched DevEFI.cpp coreboot-ROM loader (CorebootRom config key)
+ Firmware: coreboot emulation/qemu-i440fx, 4 MB, PAYLOAD_NONE, serial console
+ Loaded with: EfiRom=coreboot.rom  +  CorebootRom=1  (COM1 captured)
+ VBox.log confirmed: "EFI: coreboot image, 0x400000 bytes mapped at 0xffc00000..4GB"
+--------------------------------------------------------------------------------
+ Proof points in the log below:
+  - coreboot bootblock -> romstage -> postcar -> ramstage all run
+  - coreboot enumerates VBox's emulated chipset:
+      [8086/1237] = i440fx host bridge (VBox PIIX3)
+      [8086/7000] = PIIX3 ISA
+      [80ee/beef] = VirtualBox VGA
+      [80ee/cafe] = VirtualBox guest-service device
+      [8086/2415] = AC97 audio
+ (PAYLOAD_NONE, so it stops after device enumeration -- a real payload boots on.)
+================================================================================
+
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 bootblock starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: Found "FLASH" version 1.1 at 0x0.
+[DEBUG]  FMAP: base = 0x0 size = 0x400000 #areas = 3
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: mcache @0x00014e00 built for 10 files, used 0x234 of 0x4000 bytes
+[INFO ]  CBFS: Found 'fallback/romstage' @0x80 size 0x4b38 in mcache @0x00014e2c
+[DEBUG]  BS: bootblock times (exec / console): total (unknown) / 3 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 romstage starting (log level: 7)...
+[INFO ]  QEMU: firmware config interface not found
+[WARN ]  QEMU: Falling back to RAM info in CMOS
+[DEBUG]  CBMEM:
+[DEBUG]  IMD: root @ 0x1ffff000 254 entries.
+[DEBUG]  IMD: root @ 0x1fffec00 62 entries.
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[DEBUG]  Starting cbfs_boot_device
+[INFO ]  CBFS: Found 'fallback/postcar' @0x16940 size 0x5024 in mcache @0x00014fac
+[DEBUG]  Loading module at 0x1ffd1000 with entry 0x1ffd1031. filesize: 0x4d08 memsize: 0xb030
+[DEBUG]  Processing 183 relocs. Offset value of 0x1dfd1000
+[DEBUG]  BS: romstage times (exec / console): total (unknown) / 2 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 postcar starting (log level: 7)...
+[DEBUG]  Starting cbfs_boot_device
+[DEBUG]  FMAP: area COREBOOT found @ 1000 (4190208 bytes)
+[INFO ]  Booting from COREBOOT region
+[INFO ]  CBFS: Found 'fallback/ramstage' @0x4c40 size 0xfd0a in mcache @0x1fffea4c
+[DEBUG]  Loading module at 0x1fea5000 with entry 0x1fea5000. filesize: 0x1daf0 memsize: 0x12a328
+[DEBUG]  Processing 1955 relocs. Offset value of 0x1bea5000
+[DEBUG]  BS: postcar times (exec / console): total (unknown) / 2 ms
+
+
+[NOTE ]  coreboot-0efe0567e794 Tue Oct 20 14:24:04 UTC 2026 x86_32 ramstage starting (log level: 7)...
+[INFO ]  Enumerating buses...
+[DEBUG]  Root Device scanning...
+[DEBUG]  CPU_CLUSTER: 0 enabled
+[DEBUG]  DOMAIN: 00000000 enabled
+[DEBUG]  DOMAIN: 00000000 scanning...
+[DEBUG]  PCI: pci_scan_bus for segment group 00 bus 00
+[DEBUG]  PCI: 00:00:00.0 [8086/1237] enabled
+[DEBUG]  PCI: 00:00:01.0 [8086/7000] enabled
+[INFO ]  PCI: Static device PCI: 00:00:01.1 not found, disabling it.
+[INFO ]  PCI: Static device PCI: 00:00:01.3 not found, disabling it.
+[DEBUG]  PCI: 00:00:02.0 [80ee/beef] enabled
+[DEBUG]  PCI: 00:00:04.0 [80ee/cafe] enabled
+[DEBUG]  PCI: 00:00:05.0 [8086/2415] enabled
